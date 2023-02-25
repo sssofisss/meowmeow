@@ -1,0 +1,369 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+#include <malloc.h>
+
+typedef struct {
+int** matrix;
+int Stroka;
+int Stolbec;
+}matrixs;
+
+int** alloc2DIntArray(int Stroka, int Stolbec);
+int additionMatrix(matrixs* matrix1, matrixs* matrix2);
+int subtractionMatrix(matrixs* matrix1, matrixs* matrix2);
+int multiplicationMatrix(matrixs* matrix1, matrixs* matrix2);
+int transpositionMatrix(matrixs* matrix1, matrixs* matrix2);
+
+
+int main() {
+setlocale(LC_ALL, "Rus");
+matrixs matrix1;
+matrixs matrix2;
+FILE* matrixA, * matrixB;
+if (fopen_s(&matrixA, "matrix_A.txt", "r") == EOF) {
+printf_s("ERROR");
+_fcloseall();
+exit(1);
+}
+printf_s("ФАЙЛЫ ОТКРЫТЫ:\n");
+printf_s("_____________________________\n");
+char file;
+matrix1.matrix;
+matrix1.Stroka = 1;
+matrix1.Stolbec = 1;
+while (fscanf_s(matrixA, "%c", &file, 1) != EOF) {
+if (file == '\n') {
+matrix1.Stroka++;
+}
+else if (file == ' ' && matrix1.Stroka == 1) {
+matrix1.Stolbec++;
+}
+}
+
+int** mass1 = alloc2DIntArray(matrix1.Stroka, matrix1.Stolbec);
+fseek(matrixA, 0, SEEK_SET);
+printf_s("первая матрица %dX%d\n", matrix1.Stroka, matrix1.Stolbec);
+for (int i = 0; i < matrix1.Stroka; i++) {
+for (int j = 0; j < matrix1.Stolbec; j++) {
+fscanf_s(matrixA, "%d\t", &mass1[i][j], 1);
+}
+}
+for (int i = 0; i < matrix1.Stroka; i++) {
+for (int j = 0; j < matrix1.Stolbec; j++) {
+printf("%d\t", mass1[i][j]);
+}
+printf_s(" |");
+printf_s("\n");
+}
+matrix1.matrix = mass1;
+printf_s("_____________________________\n");
+
+if (fopen_s(&matrixB, "matrix_B.txt", "r") == EOF) {
+printf_s("ERROR");
+_fcloseall();
+exit(1);
+}
+
+char file2;
+matrix2.matrix;
+matrix2.Stroka = 1;
+matrix2.Stolbec = 1;
+while (fscanf_s(matrixB, "%c", &file2, 1) != EOF) {
+if (file2 == '\n') {
+matrix2.Stroka++;
+}
+else if (file2 == ' ' && matrix2.Stroka == 1) {
+matrix2.Stolbec++;
+}
+}
+
+printf_s("вторая матрица %dX%d\n", matrix2.Stroka, matrix2.Stolbec);
+fseek(matrixB, 0, SEEK_SET);
+int** mass2 = alloc2DIntArray(matrix2.Stroka, matrix2.Stolbec);
+for (int i = 0; i < matrix2.Stroka; i++) {
+for (int j = 0; j < matrix2.Stolbec; j++) {
+fscanf_s(matrixB, "%d\t", &mass2[i][j], 1);
+}
+}
+for (int i = 0; i < matrix2.Stroka; i++) {
+for (int j = 0; j < matrix2.Stolbec; j++) {
+printf("%d\t", mass2[i][j]);
+}
+printf_s(" |");
+printf_s("\n");
+}
+matrix2.matrix = mass2;
+printf_s("_____________________________\n");
+_fcloseall();
+
+system("pause");
+system("cls");
+printf_s("МАТРИЦЫ:\n"
+"1) СУММА МАТРИЦ\n"
+"2) РАЗНОСТЬ МАТРИЦ\n"
+"3) УМНОЖЕНИЕ МАТРИЦ\n"
+"4) ОПРЕДЕЛИТЕЛЬ\n"
+"5) ТРАНСПОНИРОВАНИЕ МАТРИЦЫ\n"
+"0) Exit\n");
+while (!_kbhit());
+char action = _getch();
+system("cls");
+switch (action) {
+case '1':
+additionMatrix(&matrix1,&matrix2);
+system("pause");
+break;
+case '2':
+subtractionMatrix(&matrix1, &matrix2);
+system("pause");
+break;
+case '3':
+multiplicationMatrix(&matrix1, &matrix2);
+system("pause");
+break;
+case '4':
+determinantMatrix(&matrix1,&matrix2);
+system("pause");
+break;
+case '5':
+transpositionMatrix(&matrix1, &matrix2);
+system("pause");
+break;
+case '0':
+printf_s("ДО СВИДАНИЯ");
+return 0;
+default:
+printf_s("ВВЕДИТЕ ЧИСЛО ИЗ СПИСКА");
+break;
+}
+free(mass1);
+free(mass2);
+return 0;
+}
+
+int** alloc2DIntArray(int Stroka, int Stolbec) {
+int **matrix = (int**)malloc(Stroka * sizeof(int*));
+if (!matrix) {
+exit(1);
+}
+for (int i = 0; i < Stroka; i++) {
+matrix[i] = (int*)malloc(Stolbec * sizeof(int));
+}
+return matrix;
+
+}
+
+int additionMatrix(matrixs* matrix1, matrixs* matrix2) {
+printf_s("СУММА МАТРИЦ<3\n");
+if ((matrix1->Stroka == matrix2->Stroka) && (matrix1->Stolbec == matrix2->Stolbec)) {
+int** sum = alloc2DIntArray(matrix1->Stroka, matrix2->Stolbec);
+for (int i = 0; i < matrix1->Stroka; i++) {
+for (int j = 0; j < matrix2->Stolbec; j++) { 
+sum[i][j] = matrix1->matrix[i][j] + matrix2->matrix[i][j];
+printf_s("%d\t", sum[i][j]);
+}
+printf_s("\n");
+}
+}
+else if ((matrix1->Stroka == '\0') && (matrix1->Stolbec == '\0') || (matrix2->Stroka == '\0') && (matrix2->Stolbec == '\0')) {
+printf_s("ПУСТОЙ ФАЙЛ\n");
+return 0;
+}
+else {
+printf_s("матрица разного размера\n");
+exit(1);
+}
+system("pause");
+return 0;
+}
+
+int subtractionMatrix(matrixs* matrix1, matrixs* matrix2) {
+system("cls");
+printf_s("ВЫБЕРИТЕ ДЕЙСТВИЕ:\n"
+"1)ИЗ 1 МАТРИЦЫ ВЫЧЕСТЬ 2.\n"
+"2)ИЗ 2 МАТРИЦЫ ВЫЧЕСТЬ 1.\n");
+char action = _getch();
+switch (action){
+case '1':
+if ((matrix1->Stroka == matrix2->Stroka) && (matrix1->Stolbec == matrix2->Stolbec)) {
+int** res = alloc2DIntArray(matrix1->Stroka, matrix2->Stolbec);
+for (int i = 0; i < matrix1->Stroka; i++) {
+for (int j = 0; j < matrix2->Stolbec; j++) {
+res[i][j] = matrix1->matrix[i][j] - matrix2->matrix[i][j];
+printf_s("%d\t", res[i][j]);
+}
+printf_s("\n");
+}
+free(res);
+}
+else if ((matrix1->Stroka == '\0') && (matrix1->Stolbec == '\0') || (matrix2->Stroka == '\0') && (matrix2->Stolbec == '\0')) {
+printf_s("ПУСТОЙ ФАЙЛ\n");
+return 0;
+}
+else {
+printf_s("матрица разного размера\n");
+exit(1);
+}
+system("pause");
+return 0;
+break;
+case '2':
+if ((matrix1->Stroka == matrix2->Stroka) && (matrix1->Stolbec == matrix2->Stolbec)) {
+int** res = alloc2DIntArray(matrix1->Stroka, matrix2->Stolbec);
+for (int i = 0; i < matrix1->Stroka; i++) {
+for (int j = 0; j < matrix2->Stolbec; j++) {
+res[i][j] = matrix2->matrix[i][j] - matrix1->matrix[i][j];
+printf_s("%d\t", res[i][j]);
+}
+printf_s("\n");
+}
+free(res);
+}
+else if ((matrix1->Stroka == '\0') && (matrix1->Stolbec == '\0') || (matrix2->Stroka == '\0') && (matrix2->Stolbec == '\0')) {
+printf_s("ПУСТОЙ ФАЙЛ\n");
+return 0;
+}
+else {
+printf_s("матрица разного размера\n");
+exit(1);
+}
+system("pause");
+return 0;
+break;
+default:
+printf_s("ВВЕДИТЕ ЧИСЛО ИЗ СПИСКА");
+break;
+}
+return 0;
+}
+
+int transpositionMatrix(matrixs* matrix1, matrixs* matrix2) {
+system("cls");
+printf_s("ВЫБЕРИТЕ ДЕЙСТВИЕ:\n"
+"1)ТРАНСПОНИРОВАТЬ 1 МАТРИЦУ.\n"
+"2)ТРАНСПОНИРОВАТЬ 2 МАТРИЦУ.\n");
+char action = _getch();
+switch (action) {
+case '1':
+if ((matrix1->Stroka != '\0') && (matrix1->Stolbec != '\0')) {
+int** res = alloc2DIntArray(matrix1->Stolbec, matrix1->Stroka);
+for (int i = 0; i < matrix1->Stolbec; i++) {
+for (int j = 0; j < matrix1->Stroka; j++) {
+res[i][j] = matrix1->matrix[j][i];
+printf_s("%d\t", res[i][j]);
+}
+printf_s("\n");
+}
+free(res);
+}
+else {
+printf_s("ПУСТОЙ ФАЙЛ\n");
+exit(1);
+}
+system("pause");
+return 0;
+break;
+case '2':
+if ((matrix2->Stroka != '\0') && (matrix2->Stolbec != '\0')) {
+int** res = alloc2DIntArray(matrix2->Stolbec, matrix2->Stroka);
+for (int i = 0; i < matrix2->Stroka; i++) {
+for (int j = 0; j < matrix2->Stolbec; j++) {
+res[i][j] = matrix2->matrix[j][i];
+printf_s("%d\t", res[i][j]);
+}
+printf_s("\n");
+}
+free(res);
+}
+else {
+printf_s("ПУСТОЙ ФАЙЛ\n");
+exit(1);
+}
+system("pause");
+return 0;
+break;
+default:
+printf_s("ВВЕДИТЕ ЧИСЛО ИЗ СПИСКА");
+break;
+}
+return 0;
+}
+
+int multiplicationMatrix(matrixs* matrix1, matrixs* matrix2) {
+printf_s(
+"1)1 УМНОЖИТЬ НА 2\n"
+"2)2 УМНОЖИТЬ НА 1\n");
+int strok = 0;
+int stolb = 0;
+int sum = 0;
+char action = _getch();
+switch (action) {
+case '1':
+if ((matrix1->Stroka == matrix2->Stolbec) && (matrix1->Stolbec == matrix2->Stroka)) {
+int** res = alloc2DIntArray(matrix2->Stolbec, matrix1->Stroka);
+for (int i = 0; i < matrix1->Stroka; i++) {
+for (int j = 0; j < matrix2->Stolbec; j++)
+{
+res[i][j] = 0;
+for (int k = 0; k < matrix2->Stolbec; k++)
+res[i][j] += matrix1->matrix[i][k] * matrix2->matrix[k][j];
+}
+}
+printf("МАТРИЦА:\n");
+for (int
+i = 0; i < matrix1->Stroka; i++) {
+for (int j = 0; j < matrix2->Stolbec; j++){
+printf("%d\t", res[i][j]);
+}
+printf("\n");
+}
+}
+else if ((matrix1->Stroka == '\0') && (matrix1->Stolbec == '\0') || (matrix2->Stroka == '\0') && (matrix2->Stolbec == '\0')) {
+printf_s("ПУСТОЙ ФАЙЛ\n");
+return 0;
+}
+else {
+printf_s("матрица разного размера\n");
+exit(1);
+}
+system("pause");
+return 0;
+break;
+case '2':
+if ((matrix2->Stroka == matrix1->Stolbec) && (matrix2->Stolbec == matrix1->Stroka)) {
+int** res = alloc2DIntArray(matrix2->Stolbec, matrix1->Stroka);
+for (int i = 0; i < matrix2->Stroka; i++) {
+for (int j = 0; j < matrix1->Stolbec; j++)
+{
+res[i][j] = 0;
+for (int k = 0; k < matrix1->Stolbec; k++)
+res[i][j] += matrix2->matrix[i][k] * matrix1->matrix[k][j];
+}
+}
+printf("МАТРИЦА:\n");
+for (int i = 0; i < matrix2->Stroka; i++) {
+for (int j = 0; j < matrix1->Stolbec; j++) {
+printf("%d\t", res[i][j]);
+}
+printf("\n");
+}
+
+}
+else if ((matrix1->Stroka == '\0') && (matrix1->Stolbec == '\0') || (matrix2->Stroka == '\0') && (matrix2->Stolbec == '\0')) {
+printf_s("ПУСТОЙ ФАЙЛ\n");
+return 0;
+}
+else {
+printf_s("матрица разного размера\n");
+exit(1);
+}
+system("pause");
+return 0;
+break;
+default:
+printf_s("ERROR:THE ENTERED OPERATION IS NOT PROVIDED IN THE CALCULATOR");
+return 0;
+}
+}
